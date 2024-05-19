@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to cart</title>
+    <link href="bootstrap.min.css" rel="stylesheet">
+    
+<link rel="stylesheet" href="stylesheet.css">
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="text-center" style="font-size: 30px;"><b>Product List</b></h1>
+        <div class="row" id="product-list" >
+            
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <h1 class="text-center">Shopping Cart</h1>
+        <div id="cart" class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                   
+                </tbody>
+            </table>
+            <div class="text-right">
+                <h4>Subtotal: ₹<span id="subtotal">0.00</span></h4>
+                <h3>Total: ₹<span id="total">0.00</span></h3>
+            </div>
+        </div>
+    </div>
+
+    <script >
+    const products = [
+        { id: 1, name: 'Product 1', price: 100 },
+        { id: 2, name: 'Product 2', price: 200 },
+        { id: 3, name: 'Product 3', price: 300 },
+    ];
+    
+    const cart = [];
+    
+    function renderProducts() {
+        const productList = document.getElementById('product-list');
+        productList.innerHTML = '';
+        products.forEach(product => {
+            productList.innerHTML += `
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <p class="card-text">Price: ₹${product.price}</p>
+                            <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    
+    function renderCart() {
+        const cartItems = document.getElementById('cart-items');
+        cartItems.innerHTML = '';
+        let subtotal = 0;
+        cart.forEach(item => {
+            const product = products.find(p => p.id === item.productId);
+            const total = item.quantity * product.price;
+            subtotal += total;
+            cartItems.innerHTML += `
+                <tr>
+                    <td>${product.name}</td>
+                    <td><input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${item.productId}, this.value)"></td>
+                    <td>₹${product.price}</td>
+                    <td>₹${total}</td>
+                    <td><button class="btn btn-danger" onclick="removeFromCart(${item.productId})">Delete</button></td>
+                </tr>
+            `;
+        });
+        document.getElementById('subtotal').innerText = subtotal.toFixed(2);
+        document.getElementById('total').innerText = subtotal.toFixed(2);
+    }
+    
+    function addToCart(productId) {
+        const existingItem = cart.find(item => item.productId === productId);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({ productId, quantity: 1 });
+        }
+        renderCart();
+    }
+    
+    function updateQuantity(productId, quantity) {
+        const item = cart.find(item => item.productId === productId);
+        if (item) {
+            item.quantity = parseInt(quantity);
+            renderCart();
+        }
+    }
+    
+    function removeFromCart(productId) {
+        const itemIndex = cart.findIndex(item => item.productId === productId);
+        if (itemIndex > -1) {
+            cart.splice(itemIndex, 1);
+            renderCart();
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        renderProducts();
+    });
+    </script>
+      <script src="js/bootstrap.bundle.min.js"></script>
+      <script src="js/jquery-3.7.1.min.js"></script>
+      <script src="js/tailwind.config.js"></script>
+      <script src="js/tailwind.js"></script>
+</body>
+</html>
